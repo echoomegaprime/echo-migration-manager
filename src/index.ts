@@ -141,6 +141,21 @@ const VERSION = "1.0.0";
 const START_TIME = Date.now();
 // API_KEY pulled from env at runtime — never hardcoded
 
+function timingSafeEqual(a: string | undefined | null, b: string | undefined | null): boolean {
+  if (!a || !b) return false;
+  const enc = new TextEncoder();
+  const bufA = enc.encode(a);
+  const bufB = enc.encode(b);
+  const len = Math.max(bufA.length, bufB.length, 1);
+  const padA = new Uint8Array(len);
+  const padB = new Uint8Array(len);
+  padA.set(bufA);
+  padB.set(bufB);
+  let diff = bufA.length ^ bufB.length;
+  for (let i = 0; i < len; i++) diff |= (padA[i] ?? 0) ^ (padB[i] ?? 0);
+  return diff === 0;
+}
+
 async function sha256(text: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
@@ -263,8 +278,11 @@ app.use("*", async (c, next) => {
   if (c.req.path === "/health" || c.req.path === "/" || c.req.method === "OPTIONS") {
     return next();
   }
+  if (!c.env.ECHO_API_KEY) {
+    return jsonError("Service misconfigured: ECHO_API_KEY not set", 503);
+  }
   const key = c.req.header("X-Echo-API-Key");
-  if (key !== (c.env.ECHO_API_KEY || '')) {
+  if (!timingSafeEqual(key, c.env.ECHO_API_KEY)) {
     return jsonError("Unauthorized: invalid or missing X-Echo-API-Key", 401);
   }
   return next();
