@@ -10,7 +10,7 @@
     "test": "tsc --noEmit && node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "hono": "^4.4.0"
+    "hono": "^4.13.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.0.0",
