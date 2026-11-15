@@ -10,11 +10,11 @@
     "test": "tsc --noEmit && node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "hono": "^4.13.5"
+    "hono": "^4.13.16"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.0.0",
     "typescript": "^6.0.2",
-    "wrangler": "^4.77.0"
+    "wrangler": "^4.162.0"
   }
 }
